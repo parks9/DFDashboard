@@ -23,7 +23,7 @@ This will be the dashboard where the Dragonfly data is displayed and orgranized.
 
 yesterday = datetime.date.today() - datetime.timedelta(days=1)
 
-night = st.date_input("Night of observation", value=datetime.date('2022-06-14'), max_value= datetime.date.today())
+night = st.date_input("Night of observation", value=datetime.date(2022, 6, 14), max_value= datetime.date.today())
 
 if str(night) not in data['date'].values:
     st.write('Night not available.')
