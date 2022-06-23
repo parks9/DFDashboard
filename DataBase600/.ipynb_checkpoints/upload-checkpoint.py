@@ -9,4 +9,6 @@ dtype = dict(
     is_good='boolean'
 )
 
-data = pd.read_csv('~/School/SURP/DFDash/DataBase600/df_database_individual_frames_uw.csv', index_col='frame_id', dtype=dtype)
+#data = pd.read_csv('~/School/SURP/DFDash/DataBase600/df_database_individual_frames_uw.csv', index_col='frame_id', dtype=dtype)
+
+data = pd.read_csv('./df_database_individual_frames_uw.csv', index_col='frame_id', dtype=dtype)
