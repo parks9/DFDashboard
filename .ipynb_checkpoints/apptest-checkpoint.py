@@ -4,12 +4,15 @@ import streamlit as st
 import pandas as pd
 import datetime
 import numpy as np
-from summ import basic_info, frame_per_lens, lightFlags, darkFlags, flatFlags, flag_count, total_flags
+from summ import basic_info, frame_per_lens, flag_count, total_flags
 import matplotlib.pyplot as plt
 import dfreduce
 
 #Trial data for the app test
 from DataBase600.upload import data
+
+lightFlags, darkFlags, flatFlags = dfreduce.flags.LightFlags.bit_to_str, dfreduce.flags.DarkFlags.bit_to_str, \
+                                    dfreduce.flags.FlatFlags.bit_to_str
 
 
 #Writing a quick title for the page
