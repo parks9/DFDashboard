@@ -1,9 +1,9 @@
 import pandas as pd
 import numpy as np
-import dfreduce.flags as dff
+# import dfreduce.flags as dff
 
-lightFlags, darkFlags, flatFlags = dff.LightFlags.bit_to_str, dff.DarkFlags.bit_to_str, \
-                                    dff.FlatFlags.bit_to_str
+# lightFlags, darkFlags, flatFlags = dff.LightFlags.bit_to_str, dff.DarkFlags.bit_to_str, \
+#                                     dff.FlatFlags.bit_to_str
 
 
 
