@@ -1,3 +1,4 @@
 matplotlib
-dfreduce
+git+https://github.com/johnnygreco/DFReduce/dfreduce#egg=dfreduce
+
 
