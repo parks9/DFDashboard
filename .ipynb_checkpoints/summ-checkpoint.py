@@ -1,5 +1,10 @@
 import pandas as pd
 import numpy as np
+import dfreduce.flags as dff
+
+lightFlags, darkFlags, flatFlags = dff.LightFlags.bit_to_str, dff.DarkFlags.bit_to_str, \
+                                    dff.FlatFlags.bit_to_str
+
 
 
 def basic_info(data):
@@ -49,4 +54,40 @@ def frame_per_lens(data):
     #index_lens = np.where(dates_listed == str(night))
     
     return len(units_listed), df
+
+
+
+
+
+def flag_count(flagged_frames, flag_list):
+
+    store = np.zeros(len(flag_list))
+    stack_flags = list(flagged_frames['flags'])
+    
+    for i,j in enumerate(stack_flags):
+        k =  np.binary_repr(j, width=len(flag_list))
+        vals = np.array([int(a) for a in k])
+
+        store += vals
+        
+    return store
+    
+
+    
+
+
+def total_flags(don, flag_names):
+# If a frame has flags, store the flag int in a list which we will later convert to binary or string and count 
+# the number of occurences for each flag
+
+    flagged = don[don['flags'] != 0]
+
+    lightF, darkF, flatF = flagged[flagged['frame_type'] == 'light'], flagged[flagged['frame_type'] == 'dark'], \
+                        flagged[flagged['frame_type'] == 'flat']
+
+    
+    
+    count_light, count_dark, count_flat = flag_count(lightF, flag_names[0]), flag_count(darkF, flag_names[1]), flag_count(flatF, flag_names[2])
+    
+    return count_light, count_dark, count_flat
 
