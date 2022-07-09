@@ -8,6 +8,43 @@ import numpy as np
 
 
 def basic_info(data):
+    """
+    Gives you the number of each type of frame taken and the percentage 
+    that do not have flags.
+    
+    This function takes a pandas dataframe of observations from the Dragonfly (DF)
+    Telephoto Array and filters out the light frames, dark frames and flat frames.
+    It also identifies the number of frames that have zero flags and returns the
+    ratio of good frames to total frames.
+
+    Parameters:
+    -------------
+    data : array-like (Pandas DataFrame)
+       Total set of frames taken by the DF (already reduced).
+       
+    Returns:
+    ------------
+    int
+        The number of light frames.
+        
+    int
+        The number of dark frames.
+        
+    int
+        The number of flat frames.
+        
+    float
+        The percentage of good light frames.
+        
+    float
+        The percentage of good dark frames.
+        
+    float
+        The percentage of good flat frames.
+
+
+    """
+    
     
     is_light = data['frame_type']== 'light'
     is_dark = data['frame_type']== 'dark'
@@ -25,6 +62,27 @@ def basic_info(data):
 
 
 def frame_per_lens(data):
+    """
+    Organizes the observations by the individual cameras.
+    
+    This function takes the set of observations made on a given night
+    and returns the basic info for each of the units that took frames.
+    
+    Parameters:
+    ------------
+    data: array-like (Pandas DataFrame)
+        Total set of frames taken by the DF (already reduced).
+        
+    Returns:
+    ------------
+    int
+        The number of units (cameras) that took frames on a chosen night.
+        
+    df: array-like (Pandas DataFrame)
+        The DataFrame organized by DF unit and displaying the basic
+        info for each unit.
+    
+    """
     
     group_lens = data.groupby('df_unit')
 
@@ -60,7 +118,33 @@ def frame_per_lens(data):
 
 
 def flag_count(flagged_frames, flag_list):
-
+    """
+    Gives you the number of each flag raised in a set of frames.
+    
+    This function counts the number of occurences that each flag
+    is raised in a set of frames. Flags are distinguished bit-wise,
+    with the length of the binary number equal to the number of 
+    possible flags.
+    
+    Parameters:
+    -------------
+    flagged_frames: array-like (Pandas DataFrame)
+         A DataFrame comprised of frames with raised flags
+         of a unique 'frame_type'.
+    
+    flag_list: list (dtype='str')
+        List of all the possible flag names for 
+        a chosen 'frame_type'.
+    
+    Returns:
+    ------------
+    store: array-like (NumPy Array)
+        An array of the number of each flag raised, separated
+        bit-wise.
+    
+    
+    """
+    
     store = np.zeros(len(flag_list))
     stack_flags = list(flagged_frames['flags'])
     
@@ -77,8 +161,33 @@ def flag_count(flagged_frames, flag_list):
 
 
 def total_flags(don, flag_names):
-# If a frame has flags, store the flag int in a list which we will later convert to binary or string and count 
-# the number of occurences for each flag
+    """
+    Gives the number of flags raised in each category of frame type.
+    
+    This function takes a raw set of observations and will count the number
+    of occurences for each flag for the light, dark and flat frames separately.
+    
+    Parameters:
+    ------------
+    don: array-like (Pandas DataFrame)
+        Raw set of observations from DF.
+    
+    flag_names: ndarray
+        Set of arrays which hold the names of the flags for each frame type.
+        
+    Retunrs:
+    ------------
+    count_light: array
+        Number of each flag raised for the light frames, separated bit-wise.
+    
+    count_dark: array
+        Number of each flag raised for the dark frames, separated bit-wise.
+        
+    count_flat: array
+        Number of each flag raised for the flat frames, separated bit-wise.
+    
+    
+    """
 
     flagged = don[don['flags'] != 0]
 
