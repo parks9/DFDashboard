@@ -1,0 +1,3 @@
+[submodule "DFReduce"]
+	path = DFReduce
+	url = https://github.com/parks9/DFReduce
