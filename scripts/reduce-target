@@ -1,0 +1,48 @@
+#!/usr/bin/env python
+# Standard library
+import os
+from argparse import ArgumentParser
+
+# Project
+from dfreduce import DFDatabaseHub
+from dfreduce import pipelines as pipe
+from dfreduce import cli, utils, logger
+start_time = utils.timer()
+
+
+###############################################################################
+# Parse command-line arguments
+###############################################################################
+args = utils.default_script_args('target', write_every=True, nseg=True, 
+                                 target_coord_group=True)
+config = utils.load_config(args.config_fn)
+
+
+###############################################################################
+# Step 1: Process lights
+###############################################################################
+cli.process_lights(args, args.targets, args.write_every)
+
+
+###############################################################################
+# Step 2: Median stack
+###############################################################################
+cli.stack_target(args, args.targets, args.nseg, 'median', False)
+
+
+###############################################################################
+# Step 3: Process lights DEEP
+###############################################################################
+cli.process_lights_deep(args, args.targets, args.write_every)
+
+
+###############################################################################
+# Step 4: Weighted average stack
+###############################################################################
+cli.stack_target(args, args.targets, args.nseg, 'average', True)
+
+
+###############################################################################
+# Job complete!
+###############################################################################
+utils.timer(start_time, 'Target Reduction')

@@ -1,0 +1,146 @@
+##############################################################################
+# Paths
+##############################################################################
+db_path: '/mnt/efs/DFReduceDB/DB'
+data_path: '/mnt/efs/scratch/RawData'
+mcals_path: '/mnt/efs/MasterCals'
+reduced_path: '/mnt/efs/scratch/ReducedData'
+
+registered_dir: 'REG'
+coadd_dir: 'COADD'
+deep_dir: 'DEEP'
+sip_header_dir: 'SIPHEAD'
+
+
+##############################################################################
+# Darks
+##############################################################################
+classify_dark:
+    check_stats:
+        bias_expected: 1000
+        rms_expected: 30
+        low_factor: 0.5
+        high_factor: 2
+
+    check_column_fits:
+        order: 5
+        bias_expected: 1000
+        max_ratio_scale: 1.015
+        max_model_var: 1.1
+
+create_master_dark:
+    min_num_darks: 2
+    sigma_lower: 2
+    sigma_upper: 3
+##############################################################################
+
+
+##############################################################################
+# Flats
+##############################################################################
+classify_flats:
+    delete_twilight_flats: True
+
+    count_negative_pixels:
+        max_negative_counts: 1000
+
+    count_zero_pixels:
+        max_frac: 0.25
+
+    check_median_count_levels:
+        min_expected: 5000
+        max_expected: 40000.
+
+    check_morning_vs_evening:
+        evening_timerange: ['21:00:00', '05:00:00'] # UTC
+        morning_timerange: ['09:00:00', '17:00:00'] # UTC
+
+    check_moon_proximity:
+        altaz_tolerance: 2.0 # deg
+        max_moon_alt: -3 # deg
+        min_targetmoon_sep: 45 # deg
+
+
+    force_twilight_flats: False
+    twilightflats_pass_flags: ['moon_up','bad_header_altaz', 'unknown_obs_time']
+
+    create_master_flat:
+        min_num_flats: 4
+        apply_mask: False
+        apply_sigma_clip: True
+        sigma_lower: 2
+        sigma_upper: 2
+
+        replace_dead_pixels:
+            padding: 3
+
+    flatten_flat:
+        clip_pixel_lim: [0.0, 65536.0]
+
+    measure_ramp:
+        max_slope: 5e-6
+
+        measure_linear_ramp:
+            row_slice: 'center_row'
+            clip_pixels: 1.1
+
+    max_ramp_stddev: 5e-5
+    max_good_ramp_stddev: 1e-6
+    max_flaggedfrac: 0.5
+
+create_master_flat:
+    min_num_flats: 7
+    apply_sigma_clip: False
+    apply_mask: True
+    smooth_mask_pix: 5
+
+
+##############################################################################
+# Lights
+##############################################################################
+
+check_image_quality:
+    min_num_obj: 1000
+    min_fwhm: 1.2
+    max_fwhm: 5.5
+    max_ellip: 0.25
+    max_source_asymmetry: 0.9
+
+check_double_stars:
+    autocorr_shape: [2001, 2001]
+    meas_shape: [201, 201]
+    frac_max_value: 0.167
+    DETECT_THRESH: 4.0 # source extractor
+
+
+##############################################################################
+# Sky Modeling
+##############################################################################
+
+model_sky:
+    poly_deg: 3
+    poly_cross_terms: False
+
+
+##############################################################################
+# Resampling
+##############################################################################
+
+register_image:
+    shape: [4250, 5750]
+    pixscale: 2.5
+
+
+##############################################################################
+# Photometric Calibration
+##############################################################################
+
+max_zp_offset: 0.2
+ref_cat_path: '/mnt/efs/APASS'
+
+
+##############################################################################
+# Stacking
+##############################################################################
+
+deep_mask_filter_size: 25

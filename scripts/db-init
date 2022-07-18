@@ -1,0 +1,107 @@
+#!/usr/bin/env python
+"""
+Script for initializing the dragonfly databases. 
+"""
+# Standard library 
+import os
+from glob import glob
+
+# Thirdy-party 
+import numpy as np
+from argparse import ArgumentParser
+
+# Project
+from dfreduce.log import logger
+from dfreduce import DFIndividualFrames, DFMasterCals, utils
+
+
+parser = ArgumentParser()
+
+# required arguments
+parser.add_argument('-c', '--config-fn',
+                    help='configuration file', required=True)
+
+parser.add_argument('--overwrite', action='store_true',
+                     help='force overwrite of existing database')
+parser.add_argument('--survey', default='UW', 
+                     help='dragonfly survey name')
+parser.add_argument('--log-level', default='info',
+                    help='log level (debug, info, warn, error)')
+parser.add_argument('--log-fn', default=None, help='output log file name')
+args = parser.parse_args()
+
+
+if args.overwrite:
+    msg = 'You have set \033[1moverwrite = True\033[0m.\nThis will delete '\
+          'the existing database(s).\n\033[91mARE YOU SURE ABOUT THIS?\033[0m '\
+          '(If so, enter yes) '
+    resp = input(msg)
+    if resp != 'yes':
+        raise Exception('\033[91mBE MORE CAREFUL!\033[0m')
+
+utils.setup_logger(args.log_level, args.log_fn)
+config = utils.load_config(args.config_fn)
+
+
+###############################################################################
+# Create an empty individual frame database if it does not exist. 
+# If it exists and overwrite == True, overwrite it.
+###############################################################################
+
+was_created = False
+suffix = f'_{args.survey.lower()}.csv'
+db_fn = os.path.join(
+    config['db_path'], 'df_database_individual_frames' + suffix)
+if not os.path.isfile(db_fn):
+    frames = DFIndividualFrames(config['db_path'], config['data_path'])
+    frames.write_database()
+    was_created = True
+else:
+    logger.warning(db_fn + ' exists!')
+    if args.overwrite:
+        logger.warning('Overwriting database')
+        os.remove(db_fn)
+        frames = DFIndividualFrames(config['db_path'], config['data_path'])
+        frames.write_database()
+        was_created = True
+
+
+###############################################################################
+# If a new individual frame database was created, find all the unique dates 
+# in the raw data directory and add them to the database. 
+###############################################################################
+
+if was_created:
+    unique_dates = []
+    df_unit_paths = glob(os.path.join(config['data_path'], 'Dragonfly*'))
+    logger.info('Finding unique dates in ' + config['data_path'])
+    for p in df_unit_paths:
+        dates = [d for d in os.listdir(p) if d[:2] == '20']
+        unique_dates.extend(dates)
+    unique_dates = np.unique(unique_dates)
+    for count, date in enumerate(unique_dates):
+        logger.info('Adding data from {}...'.format(date))
+        frames.add_night(date)
+        logger.info('Finished adding data from {}.'.format(date))
+        if count % 10 == 0:
+            frames.write_database(True)
+    frames.write_database(True)
+
+
+###############################################################################
+# Create an empty master calibration database if it does not exist.  
+# If it exists and overwrite == True, overwrite it.
+###############################################################################
+
+mcals_db_name = os.path.join(   
+    config['db_path'], 'df_database_master_cals' + suffix)
+if not os.path.isfile(mcals_db_name):
+    mastercals = DFMasterCals(config['db_path'], config['mcals_path'])
+    mastercals.write_database()
+else:
+    logger.warning(mcals_db_name + ' exists!')
+    if args.overwrite:
+        logger.warning('Overwriting database')
+        os.remove(mcals_db_name)
+        mastercals = DFMasterCals(config['db_path'], config['mcals_path'])
+        mastercals.write_database()
