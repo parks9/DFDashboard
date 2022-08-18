@@ -141,7 +141,7 @@ adj_q3 = np.nan_to_num(adj_q30)
 # Making two buttons that will display the previous info in plots
     
 if st.button("Show number of frames taken 5 days before chosen date"):    
-    figure = plt.figure(figsize=(8.5,6),tight_layout=True)
+    figure = plt.figure(figsize=(12,11),tight_layout=True)
     plt.style.use('dark_background')
     plt.plot(days_c, adj_info1, label='Light Frames')
     plt.plot(adj_info2, label='Dark Frames')
@@ -150,9 +150,9 @@ if st.button("Show number of frames taken 5 days before chosen date"):
     plt.legend()
 
 
-    plt.title('Number of Frames Taken on 5 Previous Days', size=20)
-    plt.ylabel('Number of Frames', size=20)
-    plt.xlabel('Day', size=20)
+    plt.title('Number of Frames Taken on 5 Previous Days', size=15)
+    plt.ylabel('Number of Frames', size=13)
+    plt.xlabel('Day', size=13)
     
     #plt.show()
 

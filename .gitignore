@@ -1,4 +1,14 @@
-.ipynb_checkpoints
-__pycache*
+.ipynb_checkpoints/
+__pycache__/
 notebooks
+configs/
+scripts/
+src/
+tests/
+.DS_Store
+.gitmodules
+Dockerfile
+push_ecr.sh
+pytest.ini
+setup.py
 
